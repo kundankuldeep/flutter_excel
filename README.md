@@ -19,6 +19,9 @@ location for that.
 
 
 ## Commands
-
 flutter build apk --debug
+
+## After changing the git ignore file}
+git rm -rf --cached .
+git add .
 
