@@ -12,10 +12,9 @@ class DashboardController extends GetxController {
   String file_name =
       "voterDetails_${DateTime.now().millisecondsSinceEpoch}.xlsx";
 
-  /**
-   * following functions used to get the data from list and
-   * save that to a xlsx file in the device
-   * */
+  /// following functions used to get the data from list and
+  /// save that to a xlsx file in the device
+  ///
   void onExportClicked() {
     if (mainDataList == null || mainDataList!.isEmpty) {
       showLog("No data found");
@@ -62,13 +61,17 @@ class DashboardController extends GetxController {
     }
   }
 
-  /**
-   * following functions used to get the data from xlsx file and
-   * save that to a list of model in device for now,
-   * we can upload that to server as well.
-   * */
+  /// following functions used to get the data from xlsx file and
+  /// save that to a list of model in device for now,
+  /// we can upload that to server as well.
+  ///
   void onImportClicked() async {
     var byteData = await loadAsset();
+    showLog("Data is: $byteData");
+    if (byteData == null) {
+      showToast("Something went wrong.");
+      return;
+    }
     var listData = await parseExcel(byteData);
     mainDataList = convertToPOJO(listData!);
     showDataList?.addAll(mainDataList ?? []);
@@ -77,11 +80,15 @@ class DashboardController extends GetxController {
     showLog("dataList size: ${mainDataList?.length}");
   }
 
-  Future<ByteData> loadAsset() async {
-    return await rootBundle.load('assets/sample_voter_details.xlsx');
+  // Future<ByteData> loadAsset() async {
+  //   return await rootBundle.load('assets/sample_voter_details.xlsx');
+  // }
+
+  Future<Uint8List?> loadAsset() async {
+    return await FileStorageHelper.pickAndReadExcelFile();
   }
 
-  Future<List<List<Data?>>?> parseExcel(ByteData data) async {
+  Future<List<List<Data?>>?> parseExcel(Uint8List data) async {
     var bytes = data.buffer.asUint8List();
     var excel = Excel.decodeBytes(bytes);
     var table =
